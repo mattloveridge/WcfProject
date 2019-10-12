@@ -7,17 +7,17 @@ import java.util.stream.Stream;
 
 public class CellPhoneUsageByMonthDao {
 
-    public List<CellPhoneUsageByMonth> loadCellPhoneUsageByMonthDataStore( ) {
+    public List< CellPhoneUsageByMonth > loadCellPhoneUsageByMonthDataStore( ) {
 
         String file = "C:\\WCF\\CellPhoneUsageByMonth.txt";
-        List<CellPhoneUsageByMonth> cellPhoneUsageByMonthList = new ArrayList<>();
+        List< CellPhoneUsageByMonth > cellPhoneUsageByMonthList = new ArrayList<>();
 
-        try (Stream<String> stream = Files.lines( Paths.get( file ) ) ) {
+        try ( Stream< String > stream = Files.lines( Paths.get( file ) ) ) {
                 cellPhoneUsageByMonthList =
                     stream.
                     skip( 1 ).
+                    map( line -> { return buildCellPhoneUsageByMonth( line ); } ) .
                     sorted( ).
-                    map( line -> { return buildCellPhoneUsageByMonth(line); } ) .
                     collect( Collectors.toList( ) );
         } catch ( IOException ioe ) { ioe.printStackTrace( ); }
 

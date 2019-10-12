@@ -28,7 +28,7 @@ public class CellPhoneUsageByMonth
     }
 
     @Override
-    public int compareTo(CellPhoneUsageByMonth other) {
+    public int compareTo( CellPhoneUsageByMonth other ) {
 
         int result = this.employeeId - other.employeeId;
 
@@ -39,7 +39,8 @@ public class CellPhoneUsageByMonth
 
     private LocalDate getLocalDate( CellPhoneUsageByMonth cellPhoneUsageByMonth ) {
         String [] strArray = cellPhoneUsageByMonth.getDate( ).split("/");
-        LocalDate localDate = LocalDate.of( Integer.parseInt( strArray[ 2 ] ),
+        LocalDate localDate = LocalDate.of(
+                Integer.parseInt( strArray[ 2 ] ),
                 Integer.parseInt( strArray[ 0 ] ),
                 Integer.parseInt( strArray[ 1 ] ) );
 

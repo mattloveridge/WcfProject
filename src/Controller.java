@@ -8,35 +8,50 @@ public class Controller {
         Map< Integer, CellPhone > cellPhones = new CellPhoneDao( ).loadCellPhoneDataStore( );
         List< CellPhoneUsageByMonth > cellPhoneUsageByMonths = new CellPhoneUsageByMonthDao( ).
                                                                         loadCellPhoneUsageByMonthDataStore( );
+        if ( cellPhoneUsageByMonths.isEmpty( ) ) {
+            System.out.println( "cellPhoneUsageByMonths is empty" );
+            return;
+        }
+
+        if ( cellPhones.isEmpty ( ) ) {
+            System.out.println( "cellPhones is empty" );
+            return;
+        }
         createReport( cellPhones, cellPhoneUsageByMonths );
     }
 
     private void createReport( Map<Integer, CellPhone> cellPhones,
                                     List<CellPhoneUsageByMonth> cellPhoneUsageByMonths ) {
+
         int saveEmployeeId = -1;
-        String saveMonth = "",
+        String currentMonth = "",
+                currentYear = "",
+                saveMonth = "",
                 saveYear = "";
         int cumMinutes = 0;
         double cumData = 0.0;
-        boolean onOne = true;
+
+        saveEmployeeId = cellPhoneUsageByMonths.get(0).getEmployeeId();
+        saveMonth = cellPhoneUsageByMonths.get(0).getDate().substring(1, 2).equals("/") ?
+                "1".concat(cellPhoneUsageByMonths.get(0).getDate().substring(1, 2)) :
+                cellPhoneUsageByMonths.get(0).getDate().substring(0, 2);
+        saveYear = cellPhoneUsageByMonths.get(0).getDate().substring(
+                    cellPhoneUsageByMonths.get(0).getDate().length() - 4,
+                    cellPhoneUsageByMonths.get(0).getDate().length());
 
         for (CellPhoneUsageByMonth cellPhoneUsageByMonth : cellPhoneUsageByMonths) {
 
-            if ( onOne ) {
-                saveEmployeeId = cellPhoneUsageByMonth.getEmployeeId();
-                saveMonth = cellPhoneUsageByMonth.getDate().substring(1, 2).equals("/") ?
-                        "0" + cellPhoneUsageByMonth.getDate().substring(0, 1) :
-                        cellPhoneUsageByMonth.getDate().substring(0, 2);
-                saveYear = cellPhoneUsageByMonth.getDate().substring(
-                        cellPhoneUsageByMonth.getDate().length() - 4,
-                        cellPhoneUsageByMonth.getDate().length());
-                onOne = false;
-            }
+//            System.out.println("cellPhoneUsageByMonth.getDate().substring(1, 2) = " + cellPhoneUsageByMonth.getDate().substring(1, 2));
+
+            currentMonth = cellPhoneUsageByMonth.getDate().substring(1, 2).equals("/") ?
+                    "1".concat(cellPhoneUsageByMonth.getDate().substring(1, 2)) :
+                    cellPhoneUsageByMonths.get(0).getDate().substring(0, 2);
+            currentYear = cellPhoneUsageByMonth.getDate().substring(
+                                                    cellPhoneUsageByMonth.getDate().length() - 4);
 
             if ( cellPhoneUsageByMonth.getEmployeeId() == saveEmployeeId &&
-                    cellPhoneUsageByMonth.getDate().substring(
-                            cellPhoneUsageByMonth.getDate().length() - 4).equals(saveYear) &&
-                    cellPhoneUsageByMonth.getDate().substring(0, 2).equals(saveMonth) ) {
+                    currentYear.equals(saveYear) &&
+                    currentMonth.equals(saveMonth) ) {
                 cumMinutes += cellPhoneUsageByMonth.getTotalMinutes();
                 cumData += cellPhoneUsageByMonth.getTotalData();
                 continue;
@@ -47,17 +62,33 @@ public class Controller {
             cumData = 0.0;
 
             saveEmployeeId = cellPhoneUsageByMonth.getEmployeeId();
-            saveMonth = cellPhoneUsageByMonth.getDate().substring(1, 2).equals("/") ?
-                    "0" + cellPhoneUsageByMonth.getDate().substring(0, 1) :
-                    cellPhoneUsageByMonth.getDate().substring(0, 2);
-            saveYear = cellPhoneUsageByMonth.getDate().substring(
-                    cellPhoneUsageByMonth.getDate().length() - 4,
-                    cellPhoneUsageByMonth.getDate().length());
+            saveMonth = currentMonth;
+            saveYear = currentYear;
         }
 
-        if ( saveEmployeeId != -1 ) {
-            writeDetail( saveEmployeeId, saveMonth, saveYear, cumMinutes, cumData );
-        }
+        writeDetail( saveEmployeeId, saveMonth, saveYear, cumMinutes, cumData );
+    }
+
+    public void writeDetail(
+            int saveEmployeeId, String saveDate, int counter ) {
+
+        System.out.println(saveEmployeeId +
+                "  " +
+                saveDate +
+                "  " +
+                counter) ;
+    }
+
+    public void writeDetail(
+            int saveEmployeeId, String saveDate, int counter, int detailLinesCounter ) {
+
+        System.out.println(saveEmployeeId +
+                "  " +
+                saveDate +
+                "  " +
+                counter +
+                "  " +
+                detailLinesCounter) ;
     }
 
     private void writeDetail(

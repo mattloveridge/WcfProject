@@ -11,12 +11,12 @@ public class CellPhoneDao {
     public Map<Integer, CellPhone> loadCellPhoneDataStore( ){
 
         String file = "C:\\WCF\\CellPhone.txt";
-        Map<Integer, CellPhone> cellPhones = new TreeMap<>();
+        Map< Integer, CellPhone > cellPhones = new TreeMap<>();
 
-        try ( Stream<String> stream = Files.lines(Paths.get( file ) ) ) {
+        try ( Stream< String > stream = Files.lines( Paths.get( file ) ) ) {
             cellPhones = stream.
                     skip( 1 ).
-                    map(line -> { return buildCellPhone(line); } ) .
+                    map( line -> { return buildCellPhone( line ); } ) .
                     collect( Collectors.toMap( cellPhone -> cellPhone.getEmployeeId(),
                                                                         cellPhone -> cellPhone,
                                                                         ( o1, o2 ) -> o1,
