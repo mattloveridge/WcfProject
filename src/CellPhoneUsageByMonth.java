@@ -8,7 +8,8 @@ public class CellPhoneUsageByMonth
     private int totalMinutes;
     private double totalData;
 
-    CellPhoneUsageByMonth( String [] strArray ){
+    CellPhoneUsageByMonth( String input ){
+        String [] strArray = input.split(",");
         employeeId = Integer.parseInt(strArray[ 0 ]);
         date = strArray[ 1 ];
         totalMinutes = Integer.parseInt(strArray[ 2 ]);
