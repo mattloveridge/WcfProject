@@ -1,150 +1,164 @@
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 public class ReportService {
 
-    private static String header = " Report Run Date     Number of Phones     Total Minutes     " +
+    private static String reportHeader = " Report Run Date     Number of Phones     Total Minutes     " +
             "Total Data     Average Minutes     Average Data";
 
-    private static String detail = " Employee Id     Employee Name     Model     Purchase Date     " +
-            "Minutes Usage     Data Usage";
+    private static String detailHeader = " Employee Id\tEmployee Name\t\t\tModel\t\t\t\tPurchase Date\t" +
+            "Minutes Usage\tData Usage";
 
-    private static String newLine = "\n";
+    private static String monthsHeader =
+            "\t\t\tJan\t\t" +
+            "Feb\t\t" +
+            "Mar\t\t" +
+            "Apr\t\t" +
+            "May\t\t" +
+            "Jun\t\t" +
+            "Jul\t\t" +
+            "Aug\t\t" +
+            "Sep\t\t" +
+            "Oct\t\t" +
+            "Nov\t\t" +
+            "Dec\t\t" +
+            "\n";
 
-    public static void printHeader(){
-        System.out.println(header);
-        System.out.println(newLine);
-        System.out.println(detail);
-        System.out.println(
-                "\tJan\t\t" +
-                        "Feb\t\t" +
-                        "Mar\t\t" +
-                        "Apr\t\t" +
-                        "May\t\t" +
-                        "Jun\t\t" +
-                        "Jul\t\t" +
-                        "Aug\t\t" +
-                        "Sep\t\t" +
-                        "Oct\t\t" +
-                        "Nov\t\t" +
-                        "Dec\t\t");
-    }
+    public static void printHeader( ) { System.out.println( reportHeader ); }
 
     public void createReport( Optional<Map< Integer, CellPhone >> optionalCellPhones,
-                               Optional<List<CellPhoneUsageByMonth >> optionalCellPhoneUsageByMonths ) {
+                               Optional<List<CellPhoneUsage>> optionalCellPhoneUsage ) {
 
-        int saveEmployeeId = -1;
-        String currentMonth = "",
-                currentYear = "",
-                saveMonth = "",
-                saveYear = "";
-        int cumMinutes = 0;
-        double cumData = 0.0;
-        int [] minutesByMonth = new int[ 12 ];
-        double [] usageByMonth = new double[ 12 ];
+        int currentEmployeeId = optionalCellPhoneUsage.get( ).get(0).getEmployeeId(),
+                saveEmployeeId = currentEmployeeId;
+        ReportDetail reportDetail = new ReportDetail( );
+        ReportDetails reportDetails = new ReportDetails( );
 
-        saveEmployeeId = optionalCellPhoneUsageByMonths.get().get(0).getEmployeeId();
-        saveMonth = getMonth(optionalCellPhoneUsageByMonths.get().get(0));
-        saveYear = getYear(optionalCellPhoneUsageByMonths.get().get(0));
+        printHeader( );
 
-        for (CellPhoneUsageByMonth cellPhoneUsageByMonth : optionalCellPhoneUsageByMonths.get()) {
-            currentMonth = getMonth(cellPhoneUsageByMonth);
-            currentYear = getYear(cellPhoneUsageByMonth);
-
-            if (cellPhoneUsageByMonth.getEmployeeId() != saveEmployeeId) {
-                writeDetail(
-                        new CellPhoneUsageByMonthDto(saveEmployeeId, minutesByMonth, usageByMonth),
-                            new CellPhoneDto( optionalCellPhones.get(), saveEmployeeId ) );
-                saveEmployeeId = cellPhoneUsageByMonth.getEmployeeId();
-                saveMonth = currentMonth;
-                saveYear = currentYear;
-                cumMinutes = 0;
-                cumData = 0.0;
-                minutesByMonth = new int[12];
-                usageByMonth = new double[12];
+        for (CellPhoneUsage cellPhoneUsage : optionalCellPhoneUsage.get( ) ) {
+            currentEmployeeId = cellPhoneUsage.getEmployeeId( );
+            if (currentEmployeeId != saveEmployeeId) {
+                CellPhoneDto cellPhoneDto = new CellPhoneDto( optionalCellPhones.get( ), saveEmployeeId );
+                reportDetail.setCellPhoneDto( cellPhoneDto );
+                reportDetails.addReportDetail( reportDetail );
+                reportDetail = new ReportDetail( );
+                reportDetail.addToEmployeeTotalMinutes( cellPhoneUsage.getMinutes( ) );
+                reportDetail.addToEmployeeTotalUsage( cellPhoneUsage.getUsage( ) );
+                reportDetail.addToMonthsMinutes( getMonth( cellPhoneUsage ), cellPhoneUsage.getMinutes( ) );
+                reportDetail.addToMonthsUsage( getMonth( cellPhoneUsage ), cellPhoneUsage.getUsage( ) );
+                saveEmployeeId = currentEmployeeId;
                 continue;
             }
-
-            cumMinutes += cellPhoneUsageByMonth.getTotalMinutes();
-            cumData += cellPhoneUsageByMonth.getTotalData();
-
-            saveEmployeeId = cellPhoneUsageByMonth.getEmployeeId();
-            saveMonth = currentMonth;
-            saveYear = currentYear;
+            reportDetail.addToEmployeeTotalMinutes( cellPhoneUsage.getMinutes( ) );
+            reportDetail.addToEmployeeTotalUsage( cellPhoneUsage.getUsage( ) );
+            reportDetail.addToMonthsMinutes( getMonth(cellPhoneUsage), cellPhoneUsage.getMinutes() );
+            reportDetail.addToMonthsUsage( getMonth(cellPhoneUsage), cellPhoneUsage.getUsage() );
         }
 
-        writeDetail( saveEmployeeId, saveMonth, saveYear, cumMinutes, cumData );
+        CellPhoneDto cellPhoneDto = new CellPhoneDto( optionalCellPhones.get(), saveEmployeeId );
+        reportDetail.setCellPhoneDto( cellPhoneDto );
+        reportDetails.addReportDetail( reportDetail );
+
+        writeReport( reportDetails );
     }
 
-    private void processChangedEmployee( CellPhoneUsageByMonthDto cellPhoneUsageByMonthDto ) {
-
-
+    private int getMonth( CellPhoneUsage cellPhoneUsage) {
+        String month = cellPhoneUsage.getDate().substring(1, 2).equals("/") ?
+                cellPhoneUsage.getDate().substring(0, 1) :
+                cellPhoneUsage.getDate().substring(0, 2);
+        return Integer.parseInt( month );
     }
 
-    private String getMonth( CellPhoneUsageByMonth cellPhoneUsageByMonth ) {
-        return cellPhoneUsageByMonth.getDate().substring(1, 2).equals("/") ?
-                cellPhoneUsageByMonth.getDate().substring(0, 1) :
-                cellPhoneUsageByMonth.getDate().substring(0, 2);
+    public void writeReport( ReportDetails reportDetails ) {
+
+        writeHeaderAndDetail( reportDetails );
+
+        System.out.println();
+        System.out.println(detailHeader);
+        System.out.println(monthsHeader);
+
+        for ( ReportDetail reportDetail : reportDetails.getReportDetailList( ) ) {
+            writeDetailLine( reportDetail );
+            StringBuilder sb = new StringBuilder();
+            sb.append( "minutes:\t");
+            String tab2 = "\t\t";
+            for ( int counter = 0; counter < 11; counter++ ) {
+                sb.append( reportDetail.getMonthsMinutes()[ counter ] + tab2 );
+            }
+            sb.append( reportDetail.getMonthsMinutes( )[ 11 ]);
+            System.out.println( sb );
+            sb = new StringBuilder( );
+            sb.append( "usage:\t\t");
+            DecimalFormat df = new DecimalFormat("###.###");
+            for ( int counter = 0; counter < 11; counter++ ) {
+                sb.append( df.format( reportDetail.getMonthsUsage()[ counter ] ) + tab2 );
+            }
+            sb.append( reportDetail.getMonthsUsage( )[ 11 ]);
+            System.out.println( sb );
+            System.out.println( );
+        }
     }
 
-    private String getYear( CellPhoneUsageByMonth cellPhoneUsageByMonth ) {
-        return cellPhoneUsageByMonth.getDate().substring(
-                cellPhoneUsageByMonth.getDate().length() - 4,
-                cellPhoneUsageByMonth.getDate().length());
+    private void writeDetailLine( ReportDetail reportDetail ) {
+        String tab1 = "\t",
+                tab2 = "\t\t",
+                tab3 = "\t\t\t",
+                tab4 = "\t\t\t\t",
+                tab5 = "\t\t\t\t\t";
+
+        DecimalFormat df = new DecimalFormat("###.###");
+
+        System.out.println(
+                tab1 +
+                        reportDetail.getCellPhoneDto().getEmployeeId( ) +
+                        tab2 +
+                        reportDetail.getCellPhoneDto().getEmployeeName( ) +
+                        tab3 +
+                        reportDetail.getCellPhoneDto().getModel( ) +
+                        tab1 +
+                        reportDetail.getCellPhoneDto().getPurchaseDate( ) +
+                        tab2 +
+                        reportDetail.getEmployeeTotalMinutes( ) +
+                        tab4 +
+                        df.format( reportDetail.getEmployeeTotalUsage( ) ) );
     }
 
-    public void writeDetail(
-            int saveEmployeeId, String saveDate, int counter ) {
+    private void writeHeaderAndDetail( ReportDetails reportDetails ) {
+        int totalMinutes = 0,
+                totalPhones = 0;
+        double totalUsage = 0.0;
 
-        System.out.println(saveEmployeeId +
-                "  " +
-                saveDate +
-                "  " +
-                counter) ;
-    }
+        for ( ReportDetail reportDetail : reportDetails.getReportDetailList() ) {
+            totalPhones++;
+            for ( int minutes : reportDetail.getMonthsMinutes( ) ) { totalMinutes += minutes; }
+            for ( double usage : reportDetail.getMonthsUsage( ) ) { totalUsage += usage; }
+        }
 
-    public void writeDetail(
-            int saveEmployeeId, String saveDate, int counter, int detailLinesCounter ) {
+        String tab1 = "\t",
+                tab2 = "\t\t",
+                tab3 = "\t\t\t",
+                tab4 = "\t\t\t\t",
+                tab5 = "\t\t\t\t\t";
 
-        System.out.println(saveEmployeeId +
-                "  " +
-                saveDate +
-                "  " +
-                counter +
-                "  " +
-                detailLinesCounter) ;
-    }
+        DecimalFormat df = new DecimalFormat("###.###");
 
-    public void writeDetail(
-            int saveEmployeeId, String saveMonth, String saveYear, int cumMinutes, double cumData ) {
-
-        System.out.println(saveEmployeeId +
-                "  " +
-                saveMonth +
-                "  " +
-                saveYear +
-                "  " +
-                cumMinutes +
-                "  " +
-                cumData) ;
-
-    }
-
-    public void writeDetail( CellPhoneUsageByMonthDto cellPhoneUsageByMonthDto,
-                                                                CellPhoneDto cellPhoneDto) {
-
-/*
-        System.out.println(saveEmployeeId +
-                "  " +
-                saveMonth +
-                "  " +
-                saveYear +
-                "  " +
-                cumMinutes +
-                "  " +
-                cumData) ;
-*/
-
+        System.out.println(
+                DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(LocalDate.now()) +
+                        tab3 +
+                        totalPhones +
+                        tab4 +
+                        totalMinutes +
+                        tab4 +
+                        df.format( totalUsage ) +
+                        tab3 +
+                        totalMinutes / totalPhones +
+                        tab4 +
+                        df.format( totalUsage / totalPhones ) );
     }
 }

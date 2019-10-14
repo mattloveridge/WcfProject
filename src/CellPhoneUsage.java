@@ -1,35 +1,32 @@
 import java.time.LocalDate;
 
-public class CellPhoneUsageByMonth
-                        implements Comparable<CellPhoneUsageByMonth> {
+public class CellPhoneUsage
+                        implements Comparable< CellPhoneUsage > {
 
     private int employeeId;
     private String date;
-    private int totalMinutes;
-    private double totalData;
+    private int minutes;
+    private double usage;
 
-    CellPhoneUsageByMonth( String input ){
+    CellPhoneUsage(String input ){
         String [] strArray = input.split(",");
         employeeId = Integer.parseInt(strArray[ 0 ]);
         date = strArray[ 1 ];
-        totalMinutes = Integer.parseInt(strArray[ 2 ]);
-        totalData = Double.parseDouble(strArray[ 3 ]);
+        minutes = Integer.parseInt(strArray[ 2 ]);
+        usage = Double.parseDouble(strArray[ 3 ]);
     }
 
     public int getEmployeeId() { return employeeId; }
-
     public String getDate() { return date; }
-
-    public int getTotalMinutes() {
-        return totalMinutes;
+    public int getMinutes() {
+        return minutes;
     }
-
-    public double getTotalData() {
-        return totalData;
+    public double getUsage() {
+        return usage;
     }
 
     @Override
-    public int compareTo( CellPhoneUsageByMonth other ) {
+    public int compareTo( CellPhoneUsage other ) {
 
         int result = this.employeeId - other.employeeId;
 
@@ -38,8 +35,8 @@ public class CellPhoneUsageByMonth
         return getLocalDate(this).compareTo(getLocalDate(other));
     }
 
-    private LocalDate getLocalDate( CellPhoneUsageByMonth cellPhoneUsageByMonth ) {
-        String [] strArray = cellPhoneUsageByMonth.getDate( ).split("/");
+    private LocalDate getLocalDate( CellPhoneUsage cellPhoneUsage) {
+        String [] strArray = cellPhoneUsage.getDate( ).split("/");
         LocalDate localDate = LocalDate.of(
                 Integer.parseInt( strArray[ 2 ] ),
                 Integer.parseInt( strArray[ 0 ] ),

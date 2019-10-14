@@ -7,11 +7,11 @@ public class Controller {
     public void createReportControl( ){
 
         Optional< Map< Integer, CellPhone > > optionalCellPhones = new CellPhoneDao( ).loadCellPhoneDataStore( );
-        Optional< List< CellPhoneUsageByMonth > > optionalCellPhoneUsageByMonths = new CellPhoneUsageByMonthDao( ).
-                                                                loadCellPhoneUsageByMonthDataStore( );
+        Optional< List<CellPhoneUsage> > optionalCellPhoneUsage = new CellPhoneUsageDao( ).
+                                                                            loadCellPhoneUsageDataStore( );
         checkCellPhonesToContinue( optionalCellPhones );
-        checkCellPhoneUsageByMonthsToContinue( optionalCellPhoneUsageByMonths );
-        new ReportService().createReport( optionalCellPhones, optionalCellPhoneUsageByMonths );
+        checkCellPhoneUsageToContinue( optionalCellPhoneUsage );
+        new ReportService().createReport( optionalCellPhones, optionalCellPhoneUsage );
     }
 
     private void checkCellPhonesToContinue( Optional< Map< Integer, CellPhone > > optionalCellPhones ) {
@@ -19,20 +19,21 @@ public class Controller {
             throw new RuntimeException( "checkCellPhonesToContinue: optionalCellPhones is not present" );
         }
 
-        if ( optionalCellPhones.get().isEmpty ( ) ) {
+        if ( optionalCellPhones.get().isEmpty( ) ) {
             throw new RuntimeException( "optionalCellPhones map is empty" );
         }
     }
 
-    private void checkCellPhoneUsageByMonthsToContinue( Optional< List < CellPhoneUsageByMonth > > optionalCellPhoneUsageByMonths ) {
-        if ( ! optionalCellPhoneUsageByMonths.isPresent( ) ) {
+    private void checkCellPhoneUsageToContinue(
+                            Optional< List < CellPhoneUsage > > optionalCellPhoneUsage ) {
+        if ( ! optionalCellPhoneUsage.isPresent( ) ) {
             throw new RuntimeException(
-                    "checkCellPhoneUsageByMonthsToContinue: cellPhoneUsageByMonths is not present" );
+                    "checkCellPhoneUsageToContinue: cellPhoneUsage is not present" );
         }
 
-        if ( optionalCellPhoneUsageByMonths.get().isEmpty( ) ) {
+        if ( optionalCellPhoneUsage.get().isEmpty( ) ) {
             throw new RuntimeException(
-                    "checkCellPhoneUsageByMonthsToContinue: cellPhoneUsageByMonths is empty" );
+                    "checkCellPhoneUsageToContinue: cellPhoneUsage is empty" );
         }
     }
 }

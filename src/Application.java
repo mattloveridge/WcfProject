@@ -1,7 +1,6 @@
 public class Application {
 
-    public static void main(String [] array) {
-        ReportService.printHeader();
-        new Controller().createReportControl();
+    public static void main( String [] array ) {
+        new Controller( ).createReportControl( );
     }
 }

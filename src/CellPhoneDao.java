@@ -3,8 +3,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
+`import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CellPhoneDao {
@@ -25,22 +24,10 @@ public class CellPhoneDao {
     }
 
     public CellPhone getCellPhone( Map< Integer, CellPhone > map, int employeeId ) {
-        CellPhone cellPhone = map.get(employeeId);
+        CellPhone cellPhone = map.get( employeeId );
         if ( cellPhone == null ) {
             throw new RuntimeException( "CellPhone record not found for employeeId = " + employeeId );
         }
-
         return cellPhone;
     }
-
-/*
-    public CellPhoneDto getCellPhoneDto( Map< Integer, CellPhone > map, int employeeId ) {
-        CellPhone cellPhone = map.get(employeeId);
-        if ( cellPhone == null ) {
-            throw new RuntimeException( "CellPhone record not found for employeeId = " + employeeId );
-        }
-
-        return new CellPhoneDto(cellPhone);
-    }
-*/
 }
