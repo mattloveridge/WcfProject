@@ -21,7 +21,7 @@ public class CellPhoneUsageDao {
                     collect( Collectors.toList( ) ) );
         } catch ( IOException ioe ) { ioe.printStackTrace( ); }
 
-        return Optional.ofNullable( null );
+        return Optional.empty();
     }
 
     private int getYear( CellPhoneUsage cellPhoneUsage) {

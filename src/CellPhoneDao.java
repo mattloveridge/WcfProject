@@ -3,7 +3,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Optional;
-`import java.util.stream.Collectors;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CellPhoneDao {
@@ -20,7 +20,7 @@ public class CellPhoneDao {
                                                                         (existing, replacement) -> existing) ) );
         } catch ( IOException ioe ) { ioe.printStackTrace(); }
 
-        return null;
+        return Optional.empty();
     }
 
     public CellPhone getCellPhone( Map< Integer, CellPhone > map, int employeeId ) {

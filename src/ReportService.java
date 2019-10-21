@@ -31,23 +31,25 @@ public class ReportService {
 
     public static void printHeader( ) { System.out.println( reportHeader ); }
 
-    public void createReport( Optional<Map< Integer, CellPhone >> optionalCellPhones,
-                               Optional<List<CellPhoneUsage>> optionalCellPhoneUsage ) {
+    public void createReport( Optional< Map< Integer, CellPhone >> optionalCellPhones,
+                               Optional< List< CellPhoneUsage >> optionalCellPhoneUsage ) {
 
         int currentEmployeeId = optionalCellPhoneUsage.get( ).get(0).getEmployeeId(),
                 saveEmployeeId = currentEmployeeId;
         ReportDetail reportDetail = new ReportDetail( );
         ReportDetails reportDetails = new ReportDetails( );
+        CellPhoneDto cellPhoneDto = new CellPhoneDto( optionalCellPhones.get( ), saveEmployeeId );
+        reportDetail.setCellPhoneDto( cellPhoneDto );
 
         printHeader( );
 
         for (CellPhoneUsage cellPhoneUsage : optionalCellPhoneUsage.get( ) ) {
             currentEmployeeId = cellPhoneUsage.getEmployeeId( );
             if (currentEmployeeId != saveEmployeeId) {
-                CellPhoneDto cellPhoneDto = new CellPhoneDto( optionalCellPhones.get( ), saveEmployeeId );
-                reportDetail.setCellPhoneDto( cellPhoneDto );
                 reportDetails.addReportDetail( reportDetail );
                 reportDetail = new ReportDetail( );
+                cellPhoneDto = new CellPhoneDto( optionalCellPhones.get( ), currentEmployeeId );
+                reportDetail.setCellPhoneDto( cellPhoneDto );
                 reportDetail.addToEmployeeTotalMinutes( cellPhoneUsage.getMinutes( ) );
                 reportDetail.addToEmployeeTotalUsage( cellPhoneUsage.getUsage( ) );
                 reportDetail.addToMonthsMinutes( getMonth( cellPhoneUsage ), cellPhoneUsage.getMinutes( ) );
@@ -61,8 +63,6 @@ public class ReportService {
             reportDetail.addToMonthsUsage( getMonth(cellPhoneUsage), cellPhoneUsage.getUsage() );
         }
 
-        CellPhoneDto cellPhoneDto = new CellPhoneDto( optionalCellPhones.get(), saveEmployeeId );
-        reportDetail.setCellPhoneDto( cellPhoneDto );
         reportDetails.addReportDetail( reportDetail );
 
         writeReport( reportDetails );
