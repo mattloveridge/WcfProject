@@ -4,7 +4,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public class ReportService {
 
@@ -13,21 +12,6 @@ public class ReportService {
 
     private static String detailHeader = " Employee Id\tEmployee Name\t\t\tModel\t\t\t\tPurchase Date\t" +
             "Minutes Usage\tData Usage";
-
-    private static String monthsHeader =
-            "\t\t\tJan\t\t" +
-            "Feb\t\t" +
-            "Mar\t\t" +
-            "Apr\t\t" +
-            "May\t\t" +
-            "Jun\t\t" +
-            "Jul\t\t" +
-            "Aug\t\t" +
-            "Sep\t\t" +
-            "Oct\t\t" +
-            "Nov\t\t" +
-            "Dec\t\t" +
-            "\n";
 
     private static void printHeader( ) { System.out.println( reportHeader ); }
 
@@ -83,31 +67,24 @@ public class ReportService {
     }
 
     public void writeReport( ReportDetails reportDetails ) {
+        String [] months = { "Jan", "Feb", "Mar", "Apr", "May",
+                    "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+        String minutesUsageHeader = "     Minutes  Usage";
 
         writeHeaderAndDetail( reportDetails );
 
         System.out.println();
         System.out.println(detailHeader);
-        System.out.println(monthsHeader);
 
         for ( ReportDetail reportDetail : reportDetails.getReportDetailCollection( ) ) {
             writeDetailLine( reportDetail );
-            StringBuilder sb = new StringBuilder();
-            sb.append( "minutes:\t");
-            String tab2 = "\t\t";
-            for ( int counter = 0; counter < 11; counter++ ) {
-                sb.append( reportDetail.getMonthsMinutes()[ counter ] + tab2 );
+            System.out.println( minutesUsageHeader );
+            for ( int counter = 0; counter < 12; counter++ ) {
+                System.out.println( months[ counter ] + ":   " + reportDetail.getMonthsMinutes()[ counter ] +
+                    "    " + reportDetail.getMonthsUsage()[ counter ] );//aaa
+//                sb.append( reportDetail.getMonthsMinutes()[ counter ] + tab2 );
             }
-            sb.append( reportDetail.getMonthsMinutes( )[ 11 ]);
-            System.out.println( sb );
-            sb = new StringBuilder( );
-            sb.append( "usage:\t\t");
             DecimalFormat df = new DecimalFormat("###.###");
-            for ( int counter = 0; counter < 11; counter++ ) {
-                sb.append( df.format( reportDetail.getMonthsUsage()[ counter ] ) + tab2 );
-            }
-            sb.append( reportDetail.getMonthsUsage( )[ 11 ]);
-            System.out.println( sb );
             System.out.println( );
         }
     }

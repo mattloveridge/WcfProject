@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 public class CellPhoneUsageDao {
 
-    public List< CellPhoneUsageDto > loadCellPhoneUsageDataStore() {
+    public static List< CellPhoneUsageDto > loadCellPhoneUsageDataStore() {
         final String file = "C:\\WCF\\CellPhoneUsage.txt";
         final int currentYear = 2018;
         List< CellPhoneUsageDto > cellPhoneUsageDtos = new ArrayList<>();
@@ -28,12 +28,10 @@ public class CellPhoneUsageDao {
             sorted( ).
             collect( Collectors.toList( ) );
 
-        int x = 1;
-
         return list;
     }
 
-    private int getYear( CellPhoneUsageDto cellPhoneUsageDto) {
+    private static int getYear( CellPhoneUsageDto cellPhoneUsageDto) {
         final String date = cellPhoneUsageDto.getDate();
         final String year = date.substring(
                     cellPhoneUsageDto.getDate().length() - 4,

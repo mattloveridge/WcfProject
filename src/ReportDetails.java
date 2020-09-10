@@ -5,6 +5,10 @@ public class ReportDetails {
 
     private Set< ReportDetail > reportDetailCollection = new LinkedHashSet( );
 
-    public void addReportDetail( ReportDetail reportDetail ) { reportDetailCollection.add( reportDetail ); }
-    public Set< ReportDetail > getReportDetailCollection( ) { return reportDetailCollection; }
+    public void addReportDetail( ReportDetail reportDetail ) {
+        reportDetailCollection.add( reportDetail );
+    }
+    public Set< ReportDetail > getReportDetailCollection( ) {
+        return reportDetailCollection;
+    }
 }
