@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 
 public class CellPhoneDao {
 
-    public Map< Integer, CellPhoneDto > loadCellPhoneDataStore(){
+    public static Map< Integer, CellPhoneDto > loadCellPhoneDataStore(){
         final String file = "C:\\WCF\\CellPhone.txt";
         Stream< String > stream = null;
 

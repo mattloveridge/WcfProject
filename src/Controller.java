@@ -14,23 +14,23 @@ public class Controller {
     }
 
     private Map< Integer, CellPhoneDto > loadCellPhoneDtos() {
-        return new CellPhoneDao( ).loadCellPhoneDataStore( );
+        return CellPhoneDao.loadCellPhoneDataStore();
     }
 
     private List< CellPhoneUsageDto > loadCellPhoneUsageDtos() {
-        return CellPhoneUsageDao.loadCellPhoneUsageDataStore( );
+        return CellPhoneUsageDao.loadCellPhoneUsageDataStore();
     }
 
     private void checkCellPhonesToContinue( Map< Integer, CellPhoneDto > cellPhoneDtos ) {
         if ( cellPhoneDtos.size() == 0 ) {
-            throw new RuntimeException( "checkCellPhonesToContinue: cellPhoneDtos is not present" );
+            throw new RuntimeException( "checkCellPhonesToContinue: cellPhoneDtos is empty" );
         }
     }
 
     private void checkCellPhoneUsageToContinue( List < CellPhoneUsageDto > cellPhoneUsageDtos ) {
         if ( cellPhoneUsageDtos.size() == 0 ) {
             throw new RuntimeException(
-                    "checkCellPhoneUsageToContinue: cellPhoneUsage is not present" );
+                    "checkCellPhoneUsageToContinue: cellPhoneUsageDtos is empty" );
         }
     }
 }

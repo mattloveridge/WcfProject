@@ -1,3 +1,4 @@
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -8,7 +9,7 @@ public class ReportDetails {
     public void addReportDetail( ReportDetail reportDetail ) {
         reportDetailCollection.add( reportDetail );
     }
-    public Set< ReportDetail > getReportDetailCollection( ) {
+    public Collection< ReportDetail > getReportDetailCollection( ) {
         return reportDetailCollection;
     }
 }

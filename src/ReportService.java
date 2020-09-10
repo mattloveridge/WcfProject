@@ -81,8 +81,7 @@ public class ReportService {
             System.out.println( minutesUsageHeader );
             for ( int counter = 0; counter < 12; counter++ ) {
                 System.out.println( months[ counter ] + ":   " + reportDetail.getMonthsMinutes()[ counter ] +
-                    "    " + reportDetail.getMonthsUsage()[ counter ] );//aaa
-//                sb.append( reportDetail.getMonthsMinutes()[ counter ] + tab2 );
+                    "    " + reportDetail.getMonthsUsage()[ counter ] );
             }
             DecimalFormat df = new DecimalFormat("###.###");
             System.out.println( );
