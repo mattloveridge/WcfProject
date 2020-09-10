@@ -1,39 +1,33 @@
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class Controller {
 
     public void createReportControl( ){
 
-        Optional< Map< Integer, CellPhone > > optionalCellPhones = new CellPhoneDao( ).loadCellPhoneDataStore( );
-        Optional< List<CellPhoneUsage> > optionalCellPhoneUsage = new CellPhoneUsageDao( ).
-                                                                            loadCellPhoneUsageDataStore( );
-        checkCellPhonesToContinue( optionalCellPhones );
-        checkCellPhoneUsageToContinue( optionalCellPhoneUsage );
-        new ReportService().createReport( optionalCellPhones, optionalCellPhoneUsage );
+        Map< Integer, CellPhoneDto > cellPhoneDtos = loadCellPhoneDtos();
+        checkCellPhonesToContinue( cellPhoneDtos );
+
+        List< CellPhoneUsageDto > cellPhoneUsageDtos =
+            new CellPhoneUsageDao( ).loadCellPhoneUsageDataStore();
+        checkCellPhoneUsageToContinue( cellPhoneUsageDtos );
+
+        new ReportService().createReport( cellPhoneDtos, cellPhoneUsageDtos );
     }
 
-    private void checkCellPhonesToContinue( Optional< Map< Integer, CellPhone > > optionalCellPhones ) {
-        if ( ! optionalCellPhones.isPresent( ) ) {
+    private Map< Integer, CellPhoneDto > loadCellPhoneDtos() {
+        return new CellPhoneDao( ).loadCellPhoneDataStore( );
+    }
+
+    private void checkCellPhonesToContinue( Map< Integer, CellPhoneDto > cellPhoneDtos ) {
+        if ( cellPhoneDtos.size() == 0 ) {
             throw new RuntimeException( "checkCellPhonesToContinue: optionalCellPhones is not present" );
         }
-
-        if ( optionalCellPhones.get().isEmpty( ) ) {
-            throw new RuntimeException( "optionalCellPhones map is empty" );
-        }
     }
 
-    private void checkCellPhoneUsageToContinue(
-                            Optional< List < CellPhoneUsage > > optionalCellPhoneUsage ) {
-        if ( ! optionalCellPhoneUsage.isPresent( ) ) {
+    private void checkCellPhoneUsageToContinue( List < CellPhoneUsageDto > cellPhoneUsageDtos ) {
+        if ( cellPhoneUsageDtos.size() == 0 ) {
             throw new RuntimeException(
                     "checkCellPhoneUsageToContinue: cellPhoneUsage is not present" );
-        }
-
-        if ( optionalCellPhoneUsage.get().isEmpty( ) ) {
-            throw new RuntimeException(
-                    "checkCellPhoneUsageToContinue: cellPhoneUsage is empty" );
         }
     }
 }

@@ -3,8 +3,8 @@ import java.util.Set;
 
 public class ReportDetails {
 
-    private Set< ReportDetail > reportDetailList = new LinkedHashSet( );
+    private Set< ReportDetail > reportDetailCollection = new LinkedHashSet( );
 
-    public void addReportDetail( ReportDetail reportDetail ) { reportDetailList.add( reportDetail ); }
-    public Set< ReportDetail > getReportDetailList( ) { return reportDetailList; }
+    public void addReportDetail( ReportDetail reportDetail ) { reportDetailCollection.add( reportDetail ); }
+    public Set< ReportDetail > getReportDetailCollection( ) { return reportDetailCollection; }
 }

@@ -1,14 +1,14 @@
 import java.time.LocalDate;
 
-public class CellPhoneUsage
-                        implements Comparable< CellPhoneUsage > {
+public class CellPhoneUsageDto
+        implements Comparable< CellPhoneUsageDto > {
 
     private int employeeId;
     private String date;
     private int minutes;
     private double usage;
 
-    CellPhoneUsage(String input ){
+    CellPhoneUsageDto(String input ){
         String [] strArray = input.split(",");
         employeeId = Integer.parseInt(strArray[ 0 ]);
         date = strArray[ 1 ];
@@ -26,7 +26,7 @@ public class CellPhoneUsage
     }
 
     @Override
-    public int compareTo( CellPhoneUsage other ) {
+    public int compareTo( CellPhoneUsageDto other ) {
 
         int result = this.employeeId - other.employeeId;
 
@@ -35,8 +35,8 @@ public class CellPhoneUsage
         return getLocalDate(this).compareTo(getLocalDate(other));
     }
 
-    private LocalDate getLocalDate( CellPhoneUsage cellPhoneUsage) {
-        String [] strArray = cellPhoneUsage.getDate( ).split("/");
+    private LocalDate getLocalDate( CellPhoneUsageDto cellPhoneUsageDto ) {
+        String [] strArray = cellPhoneUsageDto.getDate( ).split("/");
         LocalDate localDate = LocalDate.of(
                 Integer.parseInt( strArray[ 2 ] ),
                 Integer.parseInt( strArray[ 0 ] ),

@@ -7,28 +7,37 @@ import java.util.stream.Stream;
 
 public class CellPhoneUsageDao {
 
-    public Optional< List< CellPhoneUsage > > loadCellPhoneUsageDataStore( ) {
-        String file = "C:\\WCF\\CellPhoneUsage.txt";
+    public List< CellPhoneUsageDto > loadCellPhoneUsageDataStore() {
+        final String file = "C:\\WCF\\CellPhoneUsage.txt";
         final int currentYear = 2018;
+        List< CellPhoneUsageDto > cellPhoneUsageDtos = new ArrayList<>();
+        Stream< String > stream = null;
 
-        try ( Stream< String > stream = Files.lines( Paths.get( file ) ) ) {
-            return Optional.of(
-                    stream.
-                    skip( 1 ).
-                    map( line -> { return new CellPhoneUsage( line ); } ) .
-                    filter(cellPhoneUsage -> getYear(cellPhoneUsage) == currentYear).
-                    sorted( ).
-                    collect( Collectors.toList( ) ) );
-        } catch ( IOException ioe ) { ioe.printStackTrace( ); }
+        try {
+            stream = Files.lines(Paths.get(file) );
+        }
+        catch( Exception e ) {
+            e.printStackTrace();
+        }
 
-        return Optional.empty();
+        List< CellPhoneUsageDto > list =
+            stream.
+            skip( 1 ).
+            map( line -> { return new CellPhoneUsageDto( line ); } ) .
+            filter(cellPhoneUsageDto -> getYear(cellPhoneUsageDto) == currentYear).
+            sorted( ).
+            collect( Collectors.toList( ) );
+
+        int x = 1;
+
+        return list;
     }
 
-    private int getYear( CellPhoneUsage cellPhoneUsage) {
-        String date = cellPhoneUsage.getDate();
-        String year = date.substring(
-                    cellPhoneUsage.getDate().length() - 4,
-                    cellPhoneUsage.getDate().length());
+    private int getYear( CellPhoneUsageDto cellPhoneUsageDto) {
+        final String date = cellPhoneUsageDto.getDate();
+        final String year = date.substring(
+                    cellPhoneUsageDto.getDate().length() - 4,
+                    cellPhoneUsageDto.getDate().length());
         return Integer.parseInt(year);
     }
 }

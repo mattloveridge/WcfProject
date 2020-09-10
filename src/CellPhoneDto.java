@@ -7,13 +7,16 @@ public class CellPhoneDto {
     private int purchaseDate;
     private String model;
 
-    public CellPhoneDto(Map< Integer, CellPhone > map, int employeeId ) {
-        CellPhoneDao cellPhoneDao = new CellPhoneDao();
-        CellPhone cellPhone = cellPhoneDao.getCellPhone(map, employeeId);
-        this.employeeId = cellPhone.getEmployeeId();
-        this.employeeName = cellPhone.getEmployeeName();
-        this.purchaseDate = cellPhone.getPurchaseDate();
-        this.model = cellPhone.getModel();
+    public CellPhoneDto( String line ) {
+        String [] strArray = line.split(",");
+        employeeId = Integer.parseInt(strArray[ 0 ]);
+        employeeName = strArray[ 1 ];
+        purchaseDate = Integer.parseInt(strArray[ 2 ]);
+        model = strArray[ 3 ];
+    }
+
+    public static CellPhoneDto getCellPhoneDto(Map< Integer, CellPhoneDto > map, int employeeId ) {
+        return map.get( employeeId );
     }
 
     public int getEmployeeId() { return employeeId; }

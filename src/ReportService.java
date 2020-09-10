@@ -29,49 +29,56 @@ public class ReportService {
             "Dec\t\t" +
             "\n";
 
-    public static void printHeader( ) { System.out.println( reportHeader ); }
+    private static void printHeader( ) { System.out.println( reportHeader ); }
 
-    public void createReport( Optional< Map< Integer, CellPhone >> optionalCellPhones,
-                               Optional< List< CellPhoneUsage >> optionalCellPhoneUsage ) {
-
-        int currentEmployeeId = optionalCellPhoneUsage.get( ).get(0).getEmployeeId(),
-                saveEmployeeId = currentEmployeeId;
-        ReportDetail reportDetail = new ReportDetail( );
-        ReportDetails reportDetails = new ReportDetails( );
-        CellPhoneDto cellPhoneDto = new CellPhoneDto( optionalCellPhones.get( ), saveEmployeeId );
-        reportDetail.setCellPhoneDto( cellPhoneDto );
+    public void createReport( Map< Integer, CellPhoneDto > cellPhoneDtos,
+                                                List< CellPhoneUsageDto > cellPhoneUsageDtos ) {
+        ReportDetails reportDetails = processUsageRecords( cellPhoneDtos, cellPhoneUsageDtos );
 
         printHeader( );
-
-        for (CellPhoneUsage cellPhoneUsage : optionalCellPhoneUsage.get( ) ) {
-            currentEmployeeId = cellPhoneUsage.getEmployeeId( );
-            if (currentEmployeeId != saveEmployeeId) {
-                reportDetails.addReportDetail( reportDetail );
-                reportDetail = new ReportDetail( );
-                cellPhoneDto = new CellPhoneDto( optionalCellPhones.get( ), currentEmployeeId );
-                reportDetail.setCellPhoneDto( cellPhoneDto );
-                reportDetail.addToEmployeeTotalMinutes( cellPhoneUsage.getMinutes( ) );
-                reportDetail.addToEmployeeTotalUsage( cellPhoneUsage.getUsage( ) );
-                reportDetail.addToMonthsMinutes( getMonth( cellPhoneUsage ), cellPhoneUsage.getMinutes( ) );
-                reportDetail.addToMonthsUsage( getMonth( cellPhoneUsage ), cellPhoneUsage.getUsage( ) );
-                saveEmployeeId = currentEmployeeId;
-                continue;
-            }
-            reportDetail.addToEmployeeTotalMinutes( cellPhoneUsage.getMinutes( ) );
-            reportDetail.addToEmployeeTotalUsage( cellPhoneUsage.getUsage( ) );
-            reportDetail.addToMonthsMinutes( getMonth(cellPhoneUsage), cellPhoneUsage.getMinutes() );
-            reportDetail.addToMonthsUsage( getMonth(cellPhoneUsage), cellPhoneUsage.getUsage() );
-        }
-
-        reportDetails.addReportDetail( reportDetail );
 
         writeReport( reportDetails );
     }
 
-    private int getMonth( CellPhoneUsage cellPhoneUsage) {
-        String month = cellPhoneUsage.getDate().substring(1, 2).equals("/") ?
-                cellPhoneUsage.getDate().substring(0, 1) :
-                cellPhoneUsage.getDate().substring(0, 2);
+    private ReportDetails processUsageRecords( Map< Integer, CellPhoneDto > cellPhoneDtos,
+                                                    List< CellPhoneUsageDto > cellPhoneUsageDtos ) {
+
+        int currentEmployeeId = cellPhoneUsageDtos.get(0).getEmployeeId(),
+                saveEmployeeId = currentEmployeeId;
+        ReportDetail reportDetail = new ReportDetail( );
+        ReportDetails reportDetails = new ReportDetails( );
+        CellPhoneDto cellPhoneDto = CellPhoneDto.getCellPhoneDto( cellPhoneDtos, saveEmployeeId );
+        reportDetail.setCellPhoneDto( cellPhoneDto );
+
+        for (CellPhoneUsageDto cellPhoneUsageDto : cellPhoneUsageDtos ) {
+            currentEmployeeId = cellPhoneUsageDto.getEmployeeId( );
+            if ( currentEmployeeId != saveEmployeeId ) {
+                reportDetails.addReportDetail( reportDetail );
+                reportDetail = new ReportDetail( );
+                cellPhoneDto = CellPhoneDto.getCellPhoneDto( cellPhoneDtos, currentEmployeeId );
+                reportDetail.setCellPhoneDto( cellPhoneDto );
+                accumulateInReportDetail( cellPhoneUsageDto, reportDetail );
+                saveEmployeeId = currentEmployeeId;
+                continue;
+            }
+            accumulateInReportDetail( cellPhoneUsageDto, reportDetail );
+        }
+        reportDetails.addReportDetail( reportDetail );
+
+        return reportDetails;
+    }
+
+    private void accumulateInReportDetail( CellPhoneUsageDto cellPhoneUsageDto, ReportDetail reportDetail ) {
+        reportDetail.addToEmployeeTotalMinutes( cellPhoneUsageDto.getMinutes( ) );
+        reportDetail.addToEmployeeTotalUsage( cellPhoneUsageDto.getUsage( ) );
+        reportDetail.addToMonthsMinutes( getMonth(cellPhoneUsageDto), cellPhoneUsageDto.getMinutes() );
+        reportDetail.addToMonthsUsage( getMonth(cellPhoneUsageDto), cellPhoneUsageDto.getUsage() );
+    }
+
+    private int getMonth( CellPhoneUsageDto cellPhoneUsageDto) {
+        String month = cellPhoneUsageDto.getDate().substring(1, 2).equals("/") ?
+                cellPhoneUsageDto.getDate().substring(0, 1) :
+                cellPhoneUsageDto.getDate().substring(0, 2);
         return Integer.parseInt( month );
     }
 
@@ -83,7 +90,7 @@ public class ReportService {
         System.out.println(detailHeader);
         System.out.println(monthsHeader);
 
-        for ( ReportDetail reportDetail : reportDetails.getReportDetailList( ) ) {
+        for ( ReportDetail reportDetail : reportDetails.getReportDetailCollection( ) ) {
             writeDetailLine( reportDetail );
             StringBuilder sb = new StringBuilder();
             sb.append( "minutes:\t");
@@ -134,7 +141,7 @@ public class ReportService {
                 totalPhones = 0;
         double totalUsage = 0.0;
 
-        for ( ReportDetail reportDetail : reportDetails.getReportDetailList() ) {
+        for ( ReportDetail reportDetail : reportDetails.getReportDetailCollection() ) {
             totalPhones++;
             for ( int minutes : reportDetail.getMonthsMinutes( ) ) { totalMinutes += minutes; }
             for ( double usage : reportDetail.getMonthsUsage( ) ) { totalUsage += usage; }
